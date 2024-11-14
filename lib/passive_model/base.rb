@@ -12,6 +12,7 @@ module PassiveModel
     include ActiveModel::Validations::Callbacks
     include ActiveModel::Conversion
     extend ActiveModel::Naming
+    extend ActiveModel::Translation
 
     def initialize(hash = {})
       set_attributes(hash)
