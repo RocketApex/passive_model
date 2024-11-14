@@ -47,7 +47,7 @@ module PassiveModel
 
     def self.before_save(name)
       @@before_save_callbacks ||= []
-      @@before_save_callbacks << name
+      @@before_save_callbacks << name unless @@before_save_callbacks.include?(name)
     end
 
     def set_attributes(hash)

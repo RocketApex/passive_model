@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    passive_model (1.0.2)
+    passive_model (1.0.3)
       rails (>= 7.0.0)
 
 GEM
