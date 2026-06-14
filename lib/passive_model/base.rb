@@ -14,6 +14,26 @@ module PassiveModel
     extend ActiveModel::Naming
     extend ActiveModel::Translation
 
+    class << self
+      def before_save(name)
+        callback = name.to_sym
+
+        before_save_callbacks << callback unless before_save_callbacks.include?(callback)
+      end
+
+      def inherited(subclass)
+        super
+
+        subclass.instance_variable_set(:@before_save_callbacks, before_save_callbacks.dup)
+      end
+
+      private
+
+      def before_save_callbacks
+        @before_save_callbacks ||= []
+      end
+    end
+
     def initialize(hash = {})
       set_attributes(hash)
     end
@@ -25,12 +45,12 @@ module PassiveModel
     def save
       return false unless self.valid?
 
-      execute_callbacks(@@before_save_callbacks)
+      execute_callbacks(before_save_callbacks)
       true
     end
 
     def save!
-      raise(ActiveRecord::RecordInvalid) unless self.save
+      raise(PassiveModel::ValidationError.new(self)) unless self.save
     end
 
     def persisted?
@@ -45,9 +65,8 @@ module PassiveModel
       end
     end
 
-    def self.before_save(name)
-      @@before_save_callbacks ||= []
-      @@before_save_callbacks << name unless @@before_save_callbacks.include?(name)
+    def before_save_callbacks
+      self.class.send(:before_save_callbacks)
     end
 
     def set_attributes(hash)

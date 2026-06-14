@@ -27,6 +27,9 @@ Or install it yourself:
 gem install passive_model
 ```
 
+PassiveModel depends on ActiveModel 7.0 or newer. It does not depend on Rails or
+ActiveRecord.
+
 ## Usage
 
 Create a class that inherits from `PassiveModel::Base` and define the attributes
@@ -90,28 +93,27 @@ ActiveModel validation callbacks such as `before_validation` and
 
 ### Save
 
-`save` validates the object. If the object is invalid, it returns `false`.
+`save` validates the object. If the object is invalid, it returns `false`. If the
+object is valid, it runs registered `before_save` callbacks and returns `true`.
 
 ```ruby
-form = ContactForm.new(last_name: "Doe")
+invalid_form = ContactForm.new(last_name: "Doe")
+valid_form = ContactForm.new(first_name: "John", last_name: "Doe")
 
-form.save # => false
+invalid_form.save # => false
+valid_form.save # => true
 ```
-
-If the object is valid, `save` runs registered `before_save` callbacks and
-returns `true`. In the current implementation, valid objects without a registered
-`before_save` callback may fail instead of returning `true`; see "Current
-Implementation Notes".
 
 ### Save Bang
 
-`save!` calls `save` and raises `ActiveRecord::RecordInvalid` when the object
-cannot be saved.
+`save!` calls `save` and raises `PassiveModel::ValidationError` when the object
+cannot be saved. `PassiveModel::ValidationError` inherits from
+`ActiveModel::ValidationError`; it does not require ActiveRecord.
 
 ```ruby
 form = ContactForm.new
 
-form.save! # raises ActiveRecord::RecordInvalid
+form.save! # raises PassiveModel::ValidationError
 ```
 
 ### before_save Callback
@@ -136,21 +138,21 @@ end
 
 The callback is executed only after validations pass.
 
+`before_save` callbacks are stored per class, so callbacks registered on one
+`PassiveModel::Base` subclass do not run for unrelated subclasses.
+
 ### persisted?
 
 `persisted?` is intended to report whether `save` has been called successfully.
 In the current implementation it returns `false` unless an instance sets
 `@persisted` itself.
 
-## Current Implementation Notes
+## Behavior Notes
 
 These notes describe the current gem behavior and should be reviewed before
 changing runtime code:
 
-- `save` expects the callback storage to exist, so valid objects without a
-  registered `before_save` callback may fail.
 - `persisted?` does not currently switch to `true` after a successful `save`.
-- `before_save` callbacks are stored in class-level shared storage.
 - Attribute assignment writes instance variables directly instead of using
   ActiveModel attributes or custom setters.
 
