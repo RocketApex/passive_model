@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.4 - 2026-06-14
+## 1.1.0 - 2026-06-14
 
 - Require `active_model` directly when loading `passive_model`, so the gem boots
   without relying on the host Rails application to preload ActiveModel.
