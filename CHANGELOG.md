@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0
+
+- Use ActiveModel for assignment through `.new`, `attributes=`, and
+  `assign_attributes`. These methods call public setters.
+- Raise `ActiveModel::UnknownAttributeError` by default when a field has no
+  public setter. Rails controller parameters must be permitted before
+  assignment.
+- See [Upgrading to 2.0](README.md#upgrading-to-20) for migration steps.
+
 ## 1.1.0 - 2026-06-14
 
 - Require `active_model` directly when loading `passive_model`, so the gem boots

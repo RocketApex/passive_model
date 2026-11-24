@@ -69,10 +69,12 @@ Assign multiple attributes with `attributes=`:
 form.attributes = { first_name: "Lewis" }
 ```
 
-Assignment uses Active Model and calls the public writer for each field.
-Define writable fields with `attr_accessor` or a public setter. An unknown
-field raises `ActiveModel::UnknownAttributeError`. For controller input, pass
-parameters permitted for that form.
+You can also call `form.assign_attributes(first_name: "Lewis")`. Both forms and
+`.new` use ActiveModel to call the public setter for each field.
+
+By default, a field without a public setter raises
+`ActiveModel::UnknownAttributeError`. If you pass Rails controller parameters,
+permit the fields for that form first.
 
 ### Validations
 
@@ -145,12 +147,20 @@ The callback is executed only after validations pass.
 In the current implementation it returns `false` unless an instance sets
 `@persisted` itself.
 
-## Behavior Notes
+## Upgrading to 2.0
 
-These notes describe the current gem behavior and should be reviewed before
-changing runtime code:
+Review the fields you pass to `.new` and `attributes=` before upgrading.
 
-- `persisted?` does not currently switch to `true` after a successful `save`.
+- Give each field you intend to write a public setter. Use `attr_accessor` for
+  a simple field or define the setter yourself.
+- Remove extra keys before passing a hash. In Rails controllers, pass only
+  parameters permitted for that form.
+- Review any custom setters. PassiveModel now calls them during initialization
+  and later assignment.
+
+If you are upgrading from a version earlier than 1.1.0, also check any code that
+rescues errors from `save!`. Since 1.1.0, a validation failure raises
+`PassiveModel::ValidationError`.
 
 ## Contributing
 
