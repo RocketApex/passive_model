@@ -32,7 +32,7 @@ GEM
     json (3.1.0)
     logger (1.7.0)
     minitest (5.27.0)
-    rake (12.3.3)
+    rake (13.4.2)
     securerandom (0.4.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -44,7 +44,7 @@ PLATFORMS
 DEPENDENCIES
   minitest (~> 5.0)
   passive_model!
-  rake (~> 12.0)
+  rake (~> 13.4)
 
 BUNDLED WITH
   4.0.11
