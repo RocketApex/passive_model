@@ -53,6 +53,44 @@ class PassiveModelTest < Minitest::Test
     assert_predicate status, :success?, stderr
   end
 
+  def test_assignment_uses_public_attribute_writers
+    form_type = Class.new(PassiveModel::Base) do
+      attr_reader :name
+
+      def name=(value)
+        @name = value.strip
+      end
+    end
+
+    form = form_type.new("name" => " Ada ")
+    assert_equal "Ada", form.name
+
+    form.attributes = { name: " Grace " }
+    assert_equal "Grace", form.name
+  end
+
+  def test_assignment_rejects_unknown_fields
+    assert_raises(ActiveModel::UnknownAttributeError) do
+      ContactForm.new(unrecognized_label: "Example")
+    end
+
+    form = ContactForm.new
+    assert_raises(ActiveModel::UnknownAttributeError) do
+      form.attributes = { unrecognized_label: "Example" }
+    end
+  end
+
+  def test_assignment_honors_parameter_permissions
+    parameters = { first_name: "Ada" }
+    def parameters.permitted?
+      false
+    end
+
+    assert_raises(ActiveModel::ForbiddenAttributesError) do
+      ContactForm.new(parameters)
+    end
+  end
+
   def test_validations_work
     form = ContactForm.new(last_name: "Doe")
 

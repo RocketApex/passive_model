@@ -8,6 +8,7 @@ module PassiveModel
   # Supports before_save (gets run only if valid) - this is a custom implementation
   # Supports passing the attributes .new and .attributes
   class Base
+    include ActiveModel::AttributeAssignment
     include ActiveModel::Validations
     include ActiveModel::Validations::Callbacks
     include ActiveModel::Conversion
@@ -35,11 +36,7 @@ module PassiveModel
     end
 
     def initialize(hash = {})
-      set_attributes(hash)
-    end
-
-    def attributes=(hash = {})
-      set_attributes(hash)
+      assign_attributes(hash)
     end
 
     def save
@@ -67,12 +64,6 @@ module PassiveModel
 
     def before_save_callbacks
       self.class.send(:before_save_callbacks)
-    end
-
-    def set_attributes(hash)
-      hash.keys.each do |key|
-        instance_variable_set('@' + key.to_s, hash[key])
-      end
     end
   end
 end

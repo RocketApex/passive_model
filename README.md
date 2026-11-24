@@ -69,12 +69,10 @@ Assign multiple attributes with `attributes=`:
 form.attributes = { first_name: "Lewis" }
 ```
 
-The current implementation copies each key directly to an instance variable. For
-example, `first_name: "Lewis"` sets `@first_name`. Define `attr_accessor`,
-`attr_reader`, or explicit methods for values you need to read later.
-
-This assignment style does not call custom setters and does not reject unknown
-attribute names.
+Assignment uses Active Model and calls the public writer for each field.
+Define writable fields with `attr_accessor` or a public setter. An unknown
+field raises `ActiveModel::UnknownAttributeError`. For controller input, pass
+parameters permitted for that form.
 
 ### Validations
 
@@ -153,8 +151,6 @@ These notes describe the current gem behavior and should be reviewed before
 changing runtime code:
 
 - `persisted?` does not currently switch to `true` after a successful `save`.
-- Attribute assignment writes instance variables directly instead of using
-  ActiveModel attributes or custom setters.
 
 ## Contributing
 
