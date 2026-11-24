@@ -4,6 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    ignore:
+      # Keep routine Minitest updates on the 5.x line declared in the Gemfile.
+      - dependency-name: minitest
+        update-types:
+          - "version-update:semver-major"
     groups:
       ruby-patches:
         update-types:
